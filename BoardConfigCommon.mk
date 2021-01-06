@@ -156,11 +156,11 @@ TARGET_PROVIDES_LIBLIGHT := true
 # HIDL
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
 PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \
+       $(COMMON_PATH)/device_framework_compatibility_matrix.xml
 
 ifneq ($(BOARD_HAVE_RADIO),false)
 DEVICE_MANIFEST_FILE += $(COMMON_PATH)/manifest_radio.xml
-DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
-       $(COMMON_PATH)/device_framework_compatibility_matrix.xml
 endif
 
 # Init
