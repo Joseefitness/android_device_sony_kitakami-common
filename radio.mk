@@ -28,7 +28,7 @@ PRODUCT_PACKAGES += \
 
 # RIL
 PRODUCT_PACKAGES += \
-    android.hardware.radio@1.2-radio-service
+    android.hardware.radio@1.4-service.legacy
 
 # Telephony
 PRODUCT_PACKAGES += \
