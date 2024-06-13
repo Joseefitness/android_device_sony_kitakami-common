@@ -170,7 +170,8 @@ PRODUCT_PACKAGES += \
 # Gatekeeper
 PRODUCT_PACKAGES += \
     android.hardware.gatekeeper@1.0-impl \
-    android.hardware.gatekeeper@1.0-service
+    android.hardware.gatekeeper@1.0-service \
+    libion.vendor
 
 # GPS
 PRODUCT_PACKAGES += \
@@ -196,6 +197,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
     android.hidl.manager@1.0 \
+    libhidlmemory.vendor \
     libhidltransport \
     libhwbinder \
     vndservicemanager
@@ -270,7 +272,10 @@ PRODUCT_COPY_FILES += \
 
 # Net
 PRODUCT_PACKAGES += \
-    libandroid_net
+    libandroid_net \
+    libnetutils.vendor \
+    libsqlite.vendor \
+    libsysutils.vendor
 
 # NFC
 PRODUCT_PACKAGES += \
