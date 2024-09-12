@@ -188,7 +188,7 @@
 </hal>
 <hal format="hidl" optional="true">
     <name>android.hardware.radio</name>
-    <version>1.0-1</version>
+    <version>1.0-4</version>
     <interface>
         <name>IRadio</name>
         <instance>slot1</instance>
@@ -316,6 +316,7 @@
     <interface>
         <name>IQtiOemHook</name>
         <instance>oemhook0</instance>
+        <instance>oemhook1</instance>
     </interface>
 </hal>
 <hal format="hidl" optional="true">
@@ -343,6 +344,63 @@
         <name>IUimRemoteServiceServer</name>
         <instance>uimRemoteServer0</instance>
         <instance>uimRemoteServer1</instance>
+    </interface>
+</hal>
+<hal format="aidl" optional="true">
+    <name>android.hardware.wifi.hostapd</name>
+    <version>2</version>
+    <interface>
+        <name>IHostapd</name>
+        <instance>default</instance>
+    </interface>
+</hal>
+<hal format="aidl" optional="true">
+    <name>android.hardware.wifi.supplicant</name>
+    <version>3</version>
+    <interface>
+        <name>ISupplicant</name>
+        <instance>default</instance>
+    </interface>
+</hal>
+<hal format="aidl" optional="true">
+    <name>android.hardware.cas</name>
+    <version>1</version>
+    <interface>
+        <name>IMediaCasService</name>
+        <instance>default</instance>
+    </interface>
+</hal>
+<hal format="aidl" optional="true">
+    <name>android.hardware.drm</name>
+    <version>1</version>
+    <interface>
+        <name>IDrmFactory</name>
+        <instance>clearkey</instance>
+    </interface>
+</hal>
+<hal format="aidl" optional="true">
+    <name>android.hardware.power</name>
+    <version>3</version>
+    <interface>
+        <name>IPower</name>
+        <instance>default</instance>
+    </interface>
+</hal>
+<hal format="hidl" optional="true">
+    <name>vendor.qti.hardware.radio.qtiradio</name>
+    <version>1.0</version>
+    <interface>
+        <name>IQtiRadio</name>
+        <instance>slot1</instance>
+        <instance>slot2</instance>
+    </interface>
+</hal>
+<hal format="hidl" optional="true">
+    <name>vendor.qti.imsrtpservice</name>
+    <version>1.0</version>
+    <interface>
+        <name>IRTPService</name>
+        <instance>imsrtpservice</instance>
     </interface>
 </hal>
 </compatibility-matrix>
