@@ -23,6 +23,7 @@ qcom.hw.aac.encoder=true
 
 # BPF
 ro.kernel.ebpf.supported=false
+bpf.progs_loaded=1
 
 # Camera
 ro.qc.sdk.gestures.camera=false
