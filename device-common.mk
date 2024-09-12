@@ -324,7 +324,8 @@ PRODUCT_PACKAGES += \
 
 # Shim libs
 PRODUCT_PACKAGES += \
-   camera.qcom_shim
+   camera.qcom_shim \
+   libui_shim
 
 # Soong
 PRODUCT_SOONG_NAMESPACES += \
