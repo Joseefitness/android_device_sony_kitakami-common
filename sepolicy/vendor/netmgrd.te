@@ -1,3 +1,6 @@
+# Started by init -> transition into the netmgrd domain
+init_daemon_domain(netmgrd)
+
 allow netmgrd self:capability dac_override;
 allow netmgrd toolbox_exec:file { execute execute_no_trans getattr open read };
 allow netmgrd net_data_file:dir read;

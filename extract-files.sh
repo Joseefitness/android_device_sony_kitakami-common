@@ -44,7 +44,20 @@ function blob_fixup() {
     vendor/lib64/libsettings.so)
         patchelf --replace-needed "libprotobuf-cpp-full.so" "libprotobuf-cpp-full-v28.so" "${2}"
     ;;
-    grep -q libutils-v33.so "${2}" || "${PATCHELF}" --add-needed "libutils-v33.so" "${2}"
+    lib/libgps.utils.so|lib64/libgps.utils.so)
+        "${PATCHELF}" --add-needed "libprocessgroup.so" "${2}"
+    ;;
+    lib64/libloc_api_v02.so|vendor/lib64/liblbs_core.so|vendor/lib64/liblocationservice.so)
+        "${PATCHELF}" --add-needed "libgps_utils_setpolicy_shim.so" "${2}"
+    ;;
+    vendor/lib/liblowi_wifihal_nl.so|vendor/lib64/liblowi_wifihal_nl.so)
+        "${PATCHELF}" --add-needed "libwifi_compat_shim.so" "${2}"
+    ;;
+    bin/garden_app)
+        "${PATCHELF}" --add-needed "libmedia_remote_display_shim.so" "${2}"
+    ;;
+    vendor/lib/libizat_core.so|vendor/lib64/libizat_core.so)                  
+        "${PATCHELF}" --add-needed "libizat_compat_shim.so" "${2}"
     ;;
     esac
 }

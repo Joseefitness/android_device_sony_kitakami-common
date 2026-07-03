@@ -1,2 +1,5 @@
+# Started by init -> transition into the hal_drm_widevine domain
+init_daemon_domain(hal_drm_widevine)
+
 allow hal_drm_widevine mediadrm_vendor_data_file:dir create_dir_perms;
 allow hal_drm_widevine mediadrm_vendor_data_file:file create_file_perms;

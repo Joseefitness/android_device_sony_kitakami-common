@@ -1,3 +1,6 @@
+# Started by init (sensors.qcom) -> transition into the sensors domain
+init_daemon_domain(sensors)
+
 allow sensors device:dir { write add_name };
 allow sensors input_device:chr_file { relabelfrom getattr link };
 allow sensors input_device:dir search;

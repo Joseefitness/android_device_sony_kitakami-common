@@ -16,32 +16,9 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES := \
-    camera.qcom_shim.cpp
-
-LOCAL_SHARED_LIBRARIES := \
-    libbinder \
-    libgui \
-    liblog \
-    libui \
-    libutils
-
-LOCAL_C_INCLUDES := \
-    frameworks/native/include
-
-LOCAL_MODULE := camera.qcom_shim
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_CLASS := SHARED_LIBRARIES
-LOCAL_32_BIT_ONLY := true
-# LOCAL_PROPRIETARY_MODULE := true
-
-include $(BUILD_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
-
 LOCAL_SRC_FILES := gps_shim.cpp
 
-LOCAL_MODULE := libshim_gps
+LOCAL_MODULE := libshim_gps_sony
 LOCAL_MODULE_TAGS := optional
 LOCAL_PROPRIETARY_MODULE := true
 
@@ -50,7 +27,7 @@ include $(BUILD_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := libaudioclient_shim.cpp
-LOCAL_MODULE := libaudioclient_shim
+LOCAL_MODULE := libaudioclient_shim_sony
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 LOCAL_SHARED_LIBRARIES := libaudioclient
 # LOCAL_VENDOR_MODULE := true
@@ -63,7 +40,7 @@ LOCAL_SRC_FILES := libshim_mediabuffer.cpp
 
 LOCAL_SHARED_LIBRARIES := libstagefright_foundation libui libgui libmedia
 
-LOCAL_MODULE := libshims_ims
+LOCAL_MODULE := libshims_ims_sony
 LOCAL_MODULE_TAGS := optional
 LOCAL_MULTILIB := 64
 # LOCAL_VENDOR_MODULE := true
@@ -96,5 +73,14 @@ LOCAL_SRC_FILES := libshims_postproc.cpp
 LOCAL_CFLAGS := -Wno-unused-parameter
 LOCAL_MODULE := libshims_postproc
 LOCAL_MODULE_TAGS := optional
+LOCAL_VENDOR_MODULE := true
+include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := ppd_ppoll_shim.cpp
+LOCAL_SHARED_LIBRARIES := libdl
+LOCAL_MODULE := libppd_ppoll_shim
+LOCAL_MODULE_TAGS := optional
+LOCAL_MULTILIB := 64
 LOCAL_VENDOR_MODULE := true
 include $(BUILD_SHARED_LIBRARY)

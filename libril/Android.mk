@@ -27,6 +27,7 @@ LOCAL_STATIC_LIBRARIES := \
     libprotobuf-c-nano-enable_malloc-32bit \
 
 LOCAL_CFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror
+LOCAL_CFLAGS += -Wno-unused-but-set-variable
 LOCAL_CFLAGS += -DPB_FIELD_32BIT
 
 ifeq ($(SIM_COUNT), 2)
@@ -46,7 +47,7 @@ LOCAL_C_INCLUDES += external/nanopb-c
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../include
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/../include
 
-LOCAL_MODULE:= libril
+LOCAL_MODULE:= libril_sony_kitakami
 LOCAL_LICENSE_KINDS:= SPDX-license-identifier-Apache-2.0
 LOCAL_LICENSE_CONDITIONS:= notice
 LOCAL_NOTICE_FILE:= $(LOCAL_PATH)/NOTICE

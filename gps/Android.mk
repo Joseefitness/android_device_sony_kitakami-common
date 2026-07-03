@@ -16,4 +16,8 @@
 
 LOCAL_PATH := $(call my-dir)
 
-include $(call all-subdir-makefiles,$(LOCAL_PATH))
+# Only compile the gps.conf/izat.conf/sap.conf/flp.conf prebuilts from this
+# subtree. Skip utils/, core/, loc_api/: the stock vendor libloc_api_v02.so
+# ABI-mismatches CAF source built with our toolchain, so the matching stock
+# blobs are shipped to keep the ABI consistent end-to-end.
+include $(LOCAL_PATH)/etc/Android.mk

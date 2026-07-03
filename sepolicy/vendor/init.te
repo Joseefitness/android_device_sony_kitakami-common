@@ -50,7 +50,7 @@ allow init fingerprintd_data_file:file rename;
 allow init system_server:binder call;
 allow init hal_drm_hwservice:hwservice_manager { add find };
 allow init hal_fingerprint_hwservice:hwservice_manager { add find };
-allow init iorapd_data_file:file rw_file_perms;
+# allow init iorapd_data_file:file rw_file_perms;
 allow init system_file:dir relabelfrom;
 allow init system_file:file { execute_no_trans relabelfrom };
 allow init sysfs_devices_system_cpu:file rw_file_perms;

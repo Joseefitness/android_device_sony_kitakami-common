@@ -25,8 +25,10 @@ cc_library_shared {
         "camera.device@3.5-impl",
         "libcamera_metadata",
         "libcutils",
+        "libgui",
         "libhardware",
         "libhidlbase",
+        "libjpeg",
         "liblog",
         "libutils",
     ],
@@ -37,4 +39,6 @@ cc_library_shared {
         "camera.device@3.4-impl_headers",
         "camera.device@3.5-impl_headers",
     ],
+    // 32-bit: camera.vendor.msm8994.so is ARMv7-only (passthrough from 32-bit cameraserver)
+    compile_multilib: "32",
 }

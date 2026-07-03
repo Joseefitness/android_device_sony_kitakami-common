@@ -747,6 +747,29 @@ void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
 
 #if defined(ANDROID_MULTI_SIM)
     soc_id = socket_id;
+    // Instance-aware unsolicited routing: qcril stamps socket_id inconsistently, so force it to
+    // this rild's owned slot; any other value derefs a null RadioImpl and crashes the daemon.
+    RIL_SOCKET_ID ownedSocket = RIL_SOCKET_1;
+#if (SIM_COUNT >= 2)
+    if (strcmp(ril_service_name, RIL2_SERVICE_NAME) == 0) {
+        ownedSocket = RIL_SOCKET_2;
+    }
+#if (SIM_COUNT >= 3)
+    else if (strcmp(ril_service_name, RIL3_SERVICE_NAME) == 0) {
+        ownedSocket = RIL_SOCKET_3;
+    }
+#endif
+#if (SIM_COUNT >= 4)
+    else if (strcmp(ril_service_name, RIL4_SERVICE_NAME) == 0) {
+        ownedSocket = RIL_SOCKET_4;
+    }
+#endif
+#endif
+    if (soc_id != ownedSocket) {
+        RLOGE("RIL_onUnsolicitedResponse: socket_id %d for resp %d not owned by %s, routing to owned slot %d",
+                (int) soc_id, unsolResponse, ril_service_name, (int) ownedSocket);
+        soc_id = ownedSocket;
+    }
 #endif
 
 

@@ -25,6 +25,7 @@ BUILD_BROKEN_DUP_RULES := true
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 RELAX_USES_LIBRARY_CHECK := true
 BUILD_BROKEN_INCORRECT_PARTITION_IMAGES := true
+AB_OTA_UPDATER := false
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := MSM8994
@@ -55,7 +56,8 @@ ENABLE_CPUSETS := true
 
 # Boot image/kernel
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 boot_cpus=0-5 loop.max_part=7 dwc3_msm.hvdcp_max_current=1500 dwc3_msm.prop_chg_detect=Y coherent_pool=2M swiotlb=2048
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1 printk.devkmsg=on
+BOARD_KERNEL_CMDLINE += log_buf_len=4M
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_BASE := 0x00000000
@@ -65,6 +67,8 @@ TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_SOURCE := kernel/sony/msm8994
 TARGET_KERNEL_CLANG_COMPILE := false
+TARGET_KERNEL_VERSION := 3.10
+TARGET_KERNEL_ADDITIONAL_FLAGS := LLVM_IAS=0
 
 # APEX
 TARGET_FLATTEN_APEX := true
@@ -102,8 +106,10 @@ BOARD_HAVE_BLUETOOTH_BCM := true
 
 # Camera
 BOARD_QTI_CAMERA_32BIT_ONLY := true
+BOARD_QTI_CAMERA_V2 := true
 TARGET_USES_MEDIA_EXTENSIONS := true
 USE_DEVICE_SPECIFIC_CAMERA := true
+DEVICE_SPECIFIC_CAMERA_PATH := $(COMMON_PATH)/camera
 
 TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
     /system/bin/cameraserver=25 \
@@ -113,6 +119,11 @@ TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
     /system/bin/secd=25 \
     /system/bin/tad_static=25 \
     /system/bin/loc_launcher=25 \
+    /system/bin/gpsone_daemon=25 \
+    /system/bin/lowi-server=25 \
+    /system/bin/xtwifi-client=25 \
+    /system/bin/xtwifi-inet-agent=25 \
+    /system/bin/garden_app=25 \
     /system/bin/mm-qcamera-daemon=25 \
     /system/bin/sensors.qcom=25
 
@@ -142,12 +153,13 @@ TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
 # FM radio
 BOARD_HAVE_BCM_FM := true
 
-# BT/FM (Broadcom): Adjust the sysfs patch for 3.10 kernel
+# BT/FM (Broadcom)
 BOARD_HAVE_BCM_FM_SYSFS := "/sys/bus/platform/drivers/bcm_ldisc/bcm_ldisc/"
 BOARD_BRCM_HCI_NUM := 26
 
 # Partitions types
-BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
+# Cache partition is repurposed as /metadata (encryption)
+# BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
@@ -157,9 +169,9 @@ TARGET_PROVIDES_LIBLIGHT := true
 # HIDL
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
 PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
-DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \
-    $(COMMON_PATH)/device_framework_compatibility_matrix.xml \
-    hardware/qcom-caf/common/vendor_framework_compatibility_matrix_legacy.xml
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := $(COMMON_PATH)/device_framework_matrix.xml
+DEVICE_MATRIX_FILE := \
+    $(COMMON_PATH)/device_framework_compatibility_matrix.xml
 
 ifneq ($(BOARD_HAVE_RADIO),false)
 DEVICE_MANIFEST_FILE += $(COMMON_PATH)/manifest_radio.xml
@@ -212,17 +224,16 @@ WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY ?= true
 TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/rootdir/fstab.qcom
 TARGET_USERIMAGES_USE_EXT4 := true
 
+# Create /metadata as an empty dir in the root structure so it persists as a mountpoint
+BOARD_USES_METADATA_PARTITION := true
+
 # Shims
 TARGET_LD_SHIM_LIBS := \
-     /system/vendor/lib/hw/camera.vendor.msm8994.so|/system/lib/camera.qcom_shim.so \
-     /system/vendor/lib/hw/camera.vendor.msm8994.so|/system_ext/lib/libui_shim.so \
      /system/lib64/libsys-utils.so|libsensor.so \
-     /system/lib/libcammw.so|libsensor.so \
      /system/bin/secd|/system/lib64/lib-preload64.so \
      /system/vendor/lib64/libril-qc-qmi-1.so|libaudioclient_shim.so \
      /system/lib/libsys-utils.so|libshim_sensors.so \
      /system/lib64/libsys-utils.so|libshim_sensors.so \
-     /system/lib/libcammw.so|libshim_sensors.so \
      /system/vendor/lib64/libmm-abl.so|libshims_postproc.so
 
 ifneq ($(BOARD_HAVE_RADIO),false)
@@ -235,9 +246,9 @@ TARGET_LD_SHIM_LIBS += \
 endif
 
 # SELinux
-#include device/qcom/sepolicy-legacy/sepolicy.mk
-#BOARD_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor
+BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor
 BOARD_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy-minimal
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/private
 SELINUX_IGNORE_NEVERALLOWS := true
 
 # WiFi
@@ -256,3 +267,6 @@ WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
 
 # Inherit common blobs
 -include vendor/sony/kitakami-common/BoardConfigVendor.mk
+
+# Framework manifest fragment for legacy HALs required by FCM level 5
+DEVICE_FRAMEWORK_MANIFEST_FILE += device/sony/kitakami-common/vintf/framework_manifest.xml

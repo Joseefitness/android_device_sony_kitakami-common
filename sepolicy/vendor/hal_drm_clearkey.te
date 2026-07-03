@@ -1,5 +1,5 @@
 type hal_drm_clearkey, domain;
-type hal_drm_clearkey_exec, exec_type, file_type;
+type hal_drm_clearkey_exec, exec_type, file_type, vendor_file_type;
 
 # Started by init
 init_daemon_domain(hal_drm_clearkey)

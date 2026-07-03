@@ -32,6 +32,7 @@
 #include <hidl/HidlTransportSupport.h>
 #include <utils/SystemClock.h>
 #include <inttypes.h>
+#include <unistd.h>
 #include <cutils/properties.h>
 
 #define INVALID_HEX_CHAR 16
@@ -3056,6 +3057,28 @@ int responseInt(RadioResponseInfo& responseInfo, int serial, int responseType, R
     return ret;
 }
 
+// Deferred per-slot UICC subscription activation (SET_UICC_SUBSCRIPTION). Runs on a DETACHED
+// thread — inline would reenter qcril holding the radioService rwlock and deadlock the daemon.
+struct SubActivateArg { int slotId; int appIndex; };
+static void *subActivateThread(void *arg) {
+    SubActivateArg *a = (SubActivateArg *) arg;
+    sleep(8);  // let slot registration + @1.4 wrapper + framework settle before provisioning
+    RequestInfo *pRI = android::addRequestToList(-100 - a->slotId, a->slotId,
+            RIL_REQUEST_SET_UICC_SUBSCRIPTION);
+    if (pRI != NULL) {
+        RIL_SelectUiccSub sub = {};
+        sub.slot       = a->slotId;                       // owned physical slot (0-based)
+        sub.app_index  = a->appIndex;                     // GW/USIM app from card status
+        sub.sub_type   = (RIL_SubscriptionType) a->slotId;// slot0->SUB_1, slot1->SUB_2
+        sub.act_status = RIL_UICC_SUBSCRIPTION_ACTIVATE;
+        RLOGD("self-activating UICC sub slot=%d app_index=%d sub_type=%d",
+                sub.slot, sub.app_index, (int) sub.sub_type);
+        CALL_ONREQUEST(RIL_REQUEST_SET_UICC_SUBSCRIPTION, &sub, sizeof(sub), pRI, a->slotId);
+    }
+    free(a);
+    return NULL;
+}
+
 int radio::getIccCardStatusResponse(int slotId,
                                    int responseType, int serial, RIL_Errno e,
                                    void *response, size_t responseLen) {
@@ -3093,6 +3116,29 @@ int radio::getIccCardStatusResponse(int slotId,
                 appStatus[i].pin1Replaced = rilAppStatus[i].pin1_replaced;
                 appStatus[i].pin1 = (PinState) rilAppStatus[i].pin1;
                 appStatus[i].pin2 = (PinState) rilAppStatus[i].pin2;
+            }
+
+            // One-shot per slot: when this slot's card is present, trigger its UICC subscription
+            // activation on a detached thread (see subActivateThread). No-op for an absent slot.
+            static bool s_subActivated[RIL_SOCKET_NUM] = {false};
+            if (!s_subActivated[slotId]
+                    && p_cur->card_state == RIL_CARDSTATE_PRESENT
+                    && p_cur->num_applications > 0
+                    && p_cur->gsm_umts_subscription_app_index >= 0
+                    && p_cur->gsm_umts_subscription_app_index < p_cur->num_applications) {
+                s_subActivated[slotId] = true;
+                SubActivateArg *a = (SubActivateArg *) malloc(sizeof(SubActivateArg));
+                if (a != NULL) {
+                    a->slotId = slotId;
+                    a->appIndex = p_cur->gsm_umts_subscription_app_index;
+                    pthread_t th;
+                    if (pthread_create(&th, NULL, subActivateThread, a) == 0) {
+                        pthread_detach(th);
+                    } else {
+                        free(a);
+                        s_subActivated[slotId] = false;  // allow retry on next poll
+                    }
+                }
             }
         }
 
@@ -8728,8 +8774,11 @@ int radio::oemHookRawInd(int slotId,
 void radio::registerService(RIL_RadioFunctions *callbacks, CommandInfo *commands) {
     using namespace android::hardware;
     int simCount = 1;
+    // Fixed service-name table independent of this rild instance: slot index i always maps to
+    // the i-th physical slot. (RIL_getServiceName() is "slot1" in daemon0 but "slot2" in
+    // daemon2, which would make one process register both HIDL slots from one subscription.)
     const char *serviceNames[] = {
-            android::RIL_getServiceName()
+            RIL1_SERVICE_NAME
             #if (SIM_COUNT >= 2)
             , RIL2_SERVICE_NAME
             #if (SIM_COUNT >= 3)
@@ -8745,11 +8794,21 @@ void radio::registerService(RIL_RadioFunctions *callbacks, CommandInfo *commands
     simCount = SIM_COUNT;
     #endif
 
+    // Per-instance registration gate: each rild registers only the slot it owns (qcril is
+    // process-per-subscription), so daemon0=slot1 and daemon2=slot2 don't collide on
+    // radioService[]. No-op for single-SIM.
+    const char *myService = android::RIL_getServiceName();
+
     s_vendorFunctions = callbacks;
     s_commands = commands;
 
     configureRpcThreadpool(1, true /* callerWillJoin */);
     for (int i = 0; i < simCount; i++) {
+        if (strcmp(serviceNames[i], myService) != 0) {
+            RLOGD("registerService: instance %s skips slot %d (%s)",
+                    myService, i, serviceNames[i]);
+            continue;
+        }
         pthread_rwlock_t *radioServiceRwlockPtr = getRadioServiceRwlock(i);
         int ret = pthread_rwlock_wrlock(radioServiceRwlockPtr);
         assert(ret == 0);

@@ -18,6 +18,10 @@
 # Get non-open-source common files
 $(call inherit-product, vendor/sony/kitakami-common/kitakami-common-vendor.mk)
 
+# Build
+PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
+PRODUCT_CHECK_PREBUILT_MAX_PAGE_SIZE := false
+
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
@@ -33,6 +37,12 @@ PRODUCT_ENFORCE_RRO_TARGETS := *
 PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += \
      $(LOCAL_PATH)/overlay/packages/apps/Snap/res/values
 
+
+# Empty HIDL compat stubs for /vendor/lib64. 
+PRODUCT_COPY_FILES += \
+    device/sony/kitakami-common/hidl-compat-libs/lib64/libhwbinder.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libhwbinder.so \
+    device/sony/kitakami-common/hidl-compat-libs/lib64/libhidltransport.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libhidltransport.so \
+    device/sony/kitakami-common/hidl-compat-libs/lib64/android.hidl.base@1.0.so:$(TARGET_COPY_OUT_VENDOR)/lib64/android.hidl.base@1.0.so
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -67,6 +77,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/ld.config.txt:$(TARGET_COPY_OUT_SYSTEM)/etc/swcodec/ld.config.txt
 
+# Hardware Manager
+PRODUCT_PACKAGES += \
+    hwservicemanager
+
 # Audio
 PRODUCT_PACKAGES += \
     audio.bluetooth.default \
@@ -77,12 +91,14 @@ PRODUCT_PACKAGES += \
     android.hardware.audio.service \
     android.hardware.audio.effect@2.0-impl \
     android.hardware.audio.effect@6.0-impl \
-    android.hardware.bluetooth.audio@2.1-impl \
+    android.hardware.bluetooth.audio-impl \
     android.hardware.soundtrigger@2.0 \
     android.hardware.soundtrigger@2.0-core \
     android.hardware.soundtrigger@2.0-impl \
+    android.hidl.allocator@1.0-service \
     audio.primary.msm8994 \
     audio.r_submix.default \
+    android.hardware.media.omx@1.0-service \
     audio.usb.default \
     libaudioroute \
     libqcompostprocbundle \
@@ -92,7 +108,6 @@ PRODUCT_PACKAGES += \
 
 # Audio configuration
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/audio/audio_effects.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.conf \
     $(LOCAL_PATH)/audio/audio_output_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_output_policy.conf \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
     $(LOCAL_PATH)/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
@@ -117,14 +132,26 @@ PRODUCT_PACKAGES += \
     libbt-vendor
 
 # Camera
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init/qcamerasvr.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qcamerasvr.rc
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init/android.hardware.camera.provider@2.4-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.camera.provider@2.4-service.rc
+
 PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-service \
     android.hardware.camera.provider@2.4-impl-kitakami:32 \
-    camera.msm8994 \
+    camera.device@1.0-impl-kitakami:32 \
+    libjpeg.vendor:32 \
     Aperture \
     libyuv \
     libexif \
-    vendor.qti.hardware.camera.device@1.0
+    vendor.qti.hardware.camera.device@1.0 \
+    libandroid_vendor_shim:32 \
+    libgbm_unlock_shim:32 \
+    libsensor_vendor_shim:32 \
+    libmutex_destroy_shim:32 \
+    libcammw_motionsensor_shim:32
 
 # Charger
 PRODUCT_PACKAGES += charger_res_images
@@ -159,7 +186,6 @@ PRODUCT_PACKAGES += \
 
 # DumpState
 PRODUCT_PACKAGES += \
-    android.hardware.dumpstate@1.1-service-kitakami
 
 # FM
 #PRODUCT_PACKAGES += \
@@ -173,25 +199,34 @@ PRODUCT_PACKAGES += \
     android.hardware.gatekeeper@1.0-service \
     libion.vendor
 
-# GPS
+# GPS 
 PRODUCT_PACKAGES += \
-    gps.msm8994 \
     flp.conf \
     gps.conf \
     izat.conf \
-    sap.conf
+    lowi.conf \
+    sap.conf \
+    xtwifi.conf
 
 PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl
+    android.hardware.gnss@1.0-impl \
+    libgps_utils_setpolicy_shim \
+    libgps_utils_setpolicy_shim_system \
+    libwifi_compat_shim \
+    libwifi_compat_shim_system \
+    libizat_compat_shim \
+    libizat_compat_shim_system \
+    libmedia_remote_display_shim \
+    libcurl
 
 # Flash LED config
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/flashled_calc_parameters.cfg:system/etc/flashled_calc_parameters.cfg
 
-# Health HAL
+# Health HAL 
 PRODUCT_PACKAGES += \
-    android.hardware.health@2.1-impl \
-    android.hardware.health@2.1-service
+    android.hardware.health-service.kitakami \
+    vendor.lineage.health-service.default
 
 # HIDL
 PRODUCT_PACKAGES += \
@@ -206,8 +241,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libbase_shim \
     libshim_ui \
-    libshims_ims \
-    libshim_libimsmedia
+    libshims_ims_sony \
+    libshim_libimsmedia \
+    libmedia_vendor_shim \
+    libbinder_compat_shim \
+    libsecd_crypto_shim
 
 # Init
 PRODUCT_COPY_FILES += \
@@ -216,6 +254,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.qcom.rc:root/init.qcom.rc \
     $(LOCAL_PATH)/rootdir/ueventd.qcom.rc:root/ueventd.qcom.rc \
     $(LOCAL_PATH)/rootdir/ueventd.qcom.rc:$(TARGET_COPY_OUT_VENDOR)/etc/ueventd.rc
+
+# minimal vendor-side fstab with ONLY the voldmanaged entries
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/fstab.qcom.vendor:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
 
 # Input
 PRODUCT_COPY_FILES += \
@@ -229,7 +271,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
 
-# Keymaster
 PRODUCT_PACKAGES += \
     android.hardware.keymaster@3.0-impl \
     android.hardware.keymaster@3.0-service \
@@ -242,25 +283,16 @@ PRODUCT_PACKAGES += \
 
 # LiveDisplay
 PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay@2.0-service-legacymm \
-    vendor.lineage.livedisplay@2.0-service-sysfs
+    libpowermanager_vendor_shim \
+    vendor.lineage.livedisplay-service.legacymm
 
 PRODUCT_PACKAGES += \
-    libshims_postproc
+    libshims_postproc \
+    libppd_ppoll_shim
 
 # Media
 PRODUCT_PACKAGES += \
-    libc2dcolorconvert \
-    libminijail:32 \
-    libOmxAacEnc \
-    libOmxAmrEnc \
-    libOmxCore \
-    libOmxEvrcEnc \
-    libOmxQcelp13Enc \
-    libOmxVdec \
-    libOmxVenc \
-    libOmxVidcCommon \
-    libstagefrighthw
+    libminijail:32
 
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
@@ -316,7 +348,8 @@ PRODUCT_COPY_FILES += \
 
 # RIL Wrapper
 PRODUCT_PACKAGES += \
-    libril-wrapper
+    libril-wrapper \
+    libril_sony_kitakami
 
 # Seccomp
 PRODUCT_COPY_FILES += \
@@ -327,14 +360,14 @@ PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
     libshim_sensors
 
-# Shim libs
-PRODUCT_PACKAGES += \
-   camera.qcom_shim \
-   libui_shim
-
 # Soong
 PRODUCT_SOONG_NAMESPACES += \
-    device/sony/kitakami-common
+    device/sony/kitakami-common \
+    hardware/broadcom/libbt \
+    hardware/qcom/audio
+
+$(call soong_config_set,brcm_libbt,bdroid_buildcfg_include_dir,device/sony/kitakami-common/bluetooth)
+$(call soong_config_set,brcm_libbt,device,satsuki)
 
 # Tethering
 PRODUCT_PACKAGES += \
@@ -351,12 +384,12 @@ PRODUCT_PACKAGES += \
 
 # Vibrator
 PRODUCT_PACKAGES += \
-    android.hardware.vibrator@1.0-impl \
-    android.hardware.vibrator@1.0-service
+    vibrator.default \
+    android.hardware.vibrator-service.legacy
 
 # Wifi
 PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-service.legacy \
+    android.hardware.wifi-service \
     hostapd \
     libwifi-hal-bcm \
     libwpa_client \
@@ -365,7 +398,7 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 PRODUCT_PACKAGES += \
-   macaddrsetup
+    macaddrsetup
 
 ## This is a workaround for the Bluetooth sanitize shadow call stack (SCS)
 ## crash reported here: https://issuetracker.google.com/issues/302408537.
@@ -374,3 +407,4 @@ PRODUCT_PACKAGES += \
 PRODUCT_PROPERTY_OVERRIDES += ro.zygote.disable_gl_preload=1
 
 $(call inherit-product, hardware/broadcom/wlan/bcmdhd/config/config-bcm.mk)
+

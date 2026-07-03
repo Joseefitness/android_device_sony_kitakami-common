@@ -1,5 +1,5 @@
-type init-power-sh, domain;
-type init-power-sh_exec, exec_type, file_type;
+type init-power-sh, domain, coredomain;
+type init-power-sh_exec, exec_type, file_type, system_file_type;
 
 # Started by init
 init_daemon_domain(init-power-sh)

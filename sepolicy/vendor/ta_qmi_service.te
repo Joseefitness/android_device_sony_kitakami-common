@@ -1,6 +1,6 @@
 # ta_qmi_service service
-type ta_qmi_service, domain;
-type ta_qmi_service_exec, exec_type, vendor_file_type, file_type;
+type ta_qmi_service, domain, coredomain;
+type ta_qmi_service_exec, exec_type, system_file_type, file_type;
 
 # Started by init
 init_daemon_domain(ta_qmi_service)
@@ -14,7 +14,6 @@ allow ta_qmi_service self:capability { net_raw setgid setuid };
 # Allow ta_qmi_service to create self:socket
 allow ta_qmi_service self:socket create_socket_perms;
 allow ta_qmi_service self:socket { create read write };
-allowxperm ta_qmi_service self:socket ioctl msm_sock_ipc_ioctls;
 
 allow ta_qmi_service self:capability2 block_suspend;
 allow ta_qmi_service socket_device:sock_file write;

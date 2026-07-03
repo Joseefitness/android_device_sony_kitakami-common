@@ -28,7 +28,8 @@ PRODUCT_PACKAGES += \
 
 # RIL
 PRODUCT_PACKAGES += \
-    android.hardware.radio@1.4-service.legacy
+    android.hardware.radio@1.4-service.legacy \
+    android.hardware.radio.config@1.1-service.satsuki
 
 # Telephony
 PRODUCT_PACKAGES += \

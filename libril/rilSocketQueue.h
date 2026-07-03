@@ -19,6 +19,8 @@
 #include <hardware/ril/librilutils/proto/sap-api.pb.h>
 #include <utils/Log.h>
 
+#include <string>
+#include <queue>
 using namespace std;
 
 /**

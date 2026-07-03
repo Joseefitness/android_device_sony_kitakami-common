@@ -23,6 +23,7 @@ cc_library_shared {
         "libgralloctypes",
         "libhardware",
         "libcamera_metadata",
+        "libui",
     ],
     static_libs: [
         "android.hardware.camera.common@1.0-helper"
@@ -30,5 +31,7 @@ cc_library_shared {
     header_libs: [
         "media_plugin_headers",
     ],
-    export_include_dirs: ["."]
+    export_include_dirs: ["."],
+    // Must match impl-kitakami arch (32-bit only).
+    compile_multilib: "32",
 }

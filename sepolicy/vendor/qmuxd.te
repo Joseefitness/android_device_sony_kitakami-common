@@ -1,2 +1,7 @@
-allow qmuxd diag_device:chr_file { ioctl open read write };
-allow qmuxd sysfs:file read;
+# QMI multiplexer daemon types for legacy Qualcomm radio
+type qmuxd, domain, coredomain;
+type qmuxd_exec, exec_type, file_type, system_file_type;
+type qmuxd_socket, file_type;
+
+# Started by init -> transition into the qmuxd domain
+init_daemon_domain(qmuxd)

@@ -36,3 +36,21 @@ mode: 0755
 user: AID_SYSTEM
 group: AID_RADIO
 caps: NET_BIND_SERVICE
+
+[system/bin/xtwifi-client]
+mode: 0755
+user: AID_ROOT
+group: AID_SHELL
+caps: WAKE_ALARM BLOCK_SUSPEND
+
+[system/bin/xtwifi-inet-agent]
+mode: 0755
+user: AID_ROOT
+group: AID_SHELL
+caps: WAKE_ALARM BLOCK_SUSPEND
+
+[system/bin/lowi-server]
+mode: 0755
+user: AID_ROOT
+group: AID_SHELL
+caps: WAKE_ALARM BLOCK_SUSPEND

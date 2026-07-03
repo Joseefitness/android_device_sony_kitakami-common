@@ -1,6 +1,6 @@
 # taimport service
-type taimport, domain;
-type taimport_exec, exec_type, file_type;
+type taimport, domain, coredomain;
+type taimport_exec, exec_type, file_type, system_file_type;
 
 # Started by init
 init_daemon_domain(taimport)
