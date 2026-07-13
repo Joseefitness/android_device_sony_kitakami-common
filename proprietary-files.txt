@@ -289,7 +289,6 @@ lib64/libsys-utils.so
 lib64/libta.so
 
 # Thermal - OP2 - OxygenOS 3.6.0
-etc/thermal-engine.conf
 vendor/bin/thermal-engine
 vendor/lib/libthermalclient.so
 vendor/lib64/libthermalclient.so
