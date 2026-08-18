@@ -272,8 +272,7 @@ PRODUCT_PACKAGES += \
 
 # Lights
 PRODUCT_PACKAGES += \
-    android.hardware.light@2.0-service \
-    android.hardware.light@2.0-impl \
+    android.hardware.light-service.kitakami \
     lights.msm8994
 
 # LiveDisplay
