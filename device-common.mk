@@ -247,6 +247,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/ueventd.qcom.rc:root/ueventd.qcom.rc \
     $(LOCAL_PATH)/rootdir/ueventd.qcom.rc:$(TARGET_COPY_OUT_VENDOR)/etc/ueventd.rc
 
+# First-stage fstab
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/fstab.qcom.ramdisk:ramdisk/fstab.qcom
+
 # minimal vendor-side fstab with ONLY the voldmanaged entries
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/fstab.qcom.vendor:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
