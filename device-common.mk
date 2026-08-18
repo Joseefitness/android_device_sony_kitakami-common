@@ -180,6 +180,7 @@ PRODUCT_PACKAGES += \
 
 # DumpState
 PRODUCT_PACKAGES += \
+    android.hardware.dumpstate-service.kitakami
 
 # FM
 #PRODUCT_PACKAGES += \
