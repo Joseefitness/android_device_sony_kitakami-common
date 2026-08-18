@@ -156,10 +156,6 @@ PRODUCT_PACKAGES += \
 # Charger
 PRODUCT_PACKAGES += charger_res_images
 
-# Configstore
-PRODUCT_PACKAGES += \
-    disable_configstore
-
 # Data services
 PRODUCT_PACKAGES += \
     librmnetctl
