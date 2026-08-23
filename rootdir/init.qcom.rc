@@ -347,6 +347,9 @@ on post-fs-data
     mkdir /data/misc/camera 0770 camera camera
     mkdir /data/vendor/qcam 0770 camera camera
 
+    # timekeep's dir predates its file_contexts entry; relabel it once
+    restorecon_recursive /data/vendor/time
+
     mkdir /data/media 0770 media_rw media_rw encryption=None
     chown media_rw media_rw /data/media
 
