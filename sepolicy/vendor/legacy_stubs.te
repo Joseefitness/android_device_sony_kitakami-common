@@ -21,7 +21,7 @@ type dolby_prop, property_type;
 type uicc_prop, property_type;
 type camera_socket, file_type;
 type diag_data_file, file_type;
-type time_data_file, file_type;
+type time_data_file, file_type, data_file_type;
 type proc_dirty_ratio, fs_type;
 type per_mgr, domain, coredomain;
 type binder_per_mgr_service, service_manager_type;
