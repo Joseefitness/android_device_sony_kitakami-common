@@ -23,3 +23,7 @@ allow rild cache_file:dir search;
 allow rild firmware_file:dir search;
 allow rild device:file { open write };
 allow rild qmuxd:unix_stream_socket connectto;
+
+type_transition rild socket_device:sock_file rild_socket "rild_ims0";
+type_transition rild socket_device:sock_file rild_socket "rild_ims1";
+allow rild rild_socket:sock_file { create getattr setattr unlink write };
