@@ -5,3 +5,6 @@ allow radio ims_socket:sock_file write;
 
 # Connect to ims service.
 allow radio ims:unix_stream_socket connectto;
+
+allow radio rild_socket:sock_file write;
+allow radio rild:unix_stream_socket connectto;
