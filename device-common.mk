@@ -186,10 +186,20 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 
 # FM
-#PRODUCT_PACKAGES += \
-#    FMRadio \
-#    brcm-uim-sysfs \
-#    libfmradio.v4l2-fm
+PRODUCT_PACKAGES += \
+    FMRadio \
+    fmd
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.fm.chip=17238 \
+    ro.fm.band=1 \
+    ro.fm.low_band=875 \
+    ro.fm.high_band=1080 \
+    ro.fm.seek_space=1 \
+    ro.fm.max_scan_num=30 \
+    ro.fm.seek_lev=4 \
+    ro.fm.scan_sort=1 \
+    ro.fm.short_ana_sup=0
 
 # Gatekeeper
 PRODUCT_PACKAGES += \
@@ -366,6 +376,7 @@ PRODUCT_SOONG_NAMESPACES += \
 
 $(call soong_config_set,brcm_libbt,bdroid_buildcfg_include_dir,device/sony/kitakami-common/bluetooth)
 $(call soong_config_set,brcm_libbt,device,satsuki)
+$(call soong_config_set,libfmjni,vendor,brcm)
 
 # Tethering
 PRODUCT_PACKAGES += \
