@@ -256,6 +256,9 @@ PRODUCT_PACKAGES += \
     libbinder_compat_shim \
     libsecd_crypto_shim
 
+PRODUCT_COPY_FILES += \
+    vendor/sony/kitakami-common/drmfix/lib64/libdrmfix.so:system/lib64/libdrmfix.so
+
 # Init
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/fstab.qcom:root/fstab.qcom \
