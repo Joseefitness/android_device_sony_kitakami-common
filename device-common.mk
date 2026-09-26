@@ -160,7 +160,6 @@ PRODUCT_PACKAGES += \
     sonycamera \
     libsonycamera_bp \
     libjpeg.vendor:32 \
-    Aperture \
     libyuv \
     libexif \
     vendor.qti.hardware.camera.device@1.0 \
@@ -172,6 +171,8 @@ PRODUCT_PACKAGES += \
     libalfort_shim:32
 
 $(call inherit-product, vendor/sony/kitakami-common/sonycamera/sonycamera.mk)
+
+PRODUCT_NO_CAMERA := true
 
 # Charger
 PRODUCT_PACKAGES += charger_res_images
